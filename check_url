@@ -1,0 +1,58 @@
+#!/bin/bash
+# ######################## check_memory.pl ######################## #
+# Date      : September 20, 2015                                    #
+# Purpose   : Script to check a given URL's response time.          #
+# Author    : Omar Abou-Youssef                                     #
+# Arguments : check_url -u "<url to check>"                         #
+#                       -w <Warning timeout threshold in seconds>   #
+#                       -c <Critical timeout threshold in seconds>  #
+# Depends   : curl                                                  #
+# ################################################################# #
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+RETURN=$STATE_UNKNOWN
+OUTPUT="Plugin error"
+
+WARNING="2.0"
+CRITICAL="5.0"
+URL=""
+
+
+while getopts ":u:w:c:" o; do
+    case "${o}" in
+        w)  
+            WARNING=${OPTARG}
+            ;;  
+        c)  
+            CRITICAL=${OPTARG}
+            ;;  
+        u)  
+            URL=${OPTARG}
+            ;;  
+    esac
+done
+
+TIME=$(curl -X GET "$URL" -write-out -w %{time_total} -o /dev/null -s)
+
+if (( $(echo "$TIME!=0.0" | bc -l) )); then
+    RETURN=$STATE_OK
+    OUTPUT="CURL OK - Response time ${TIME}s"
+fi
+
+if (( $(echo "$TIME>$WARNING" | bc -l) )); then
+    RETURN=$STATE_WARNING
+    OUTPUT="WARNING - Response time ${TIME}s"
+fi
+
+if (( $(echo "$TIME>$CRITICAL" | bc -l) )); then
+    RETURN=$STATE_CRITICAL
+    OUTPUT="PROBLEM - Response time ${TIME}s"
+fi
+
+# OUTPUT AND RETURN
+echo $OUTPUT
+exit $RETURN

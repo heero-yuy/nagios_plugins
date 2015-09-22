@@ -1,0 +1,53 @@
+#!/bin/bash
+# ######################## check_memory ########################### #
+# Date      : September 20, 2015                                    #
+# Purpose   : Script to check memory usage percentage from Ubuntu's #
+#             native landscape-sysinfo function.                    #
+# Author    : Omar Abou-Youssef                                     #
+# Arguments : check_memory -w <Warning percentage>                  #
+#                          -c <Critical percentage>                 #
+# Depends   : landscape-sysinfo                                     #
+# ################################################################# #
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+RETURN=$STATE_UNKNOWN
+OUTPUT="Plugin error"
+
+WARNING=80
+CRITICAL=100
+
+while getopts ":w:c:" o; do
+    case "${o}" in
+        w)  
+            WARNING=${OPTARG}
+            CRITICAL=$((WARNING + 10))
+            ;;  
+        c)  
+            CRITICAL=${OPTARG}
+            ;;  
+    esac
+done
+
+MEMORY=$(landscape-sysinfo --sysinfo-plugins=Memory | sed -r 's/^\s+Memory usage:\s+([0-9]+).*$/\1/')
+
+if [ "$MEMORY" -ne 0 ] ; then
+    RETURN=$STATE_OK
+    OUTPUT="OK: Memory usage is ${MEMORY}%"
+fi
+
+if [ "$MEMORY" -ge "$WARNING" ] ; then
+    RETURN=$STATE_WARNING
+    OUTPUT="WARNING: Memory usage is ${MEMORY}%"
+fi
+
+if [  "$MEMORY" -ge "$CRITICAL" ] ; then
+    RETURN=$STATE_CRITICAL
+    OUTPUT="PROBLEM: Memory usage is ${MEMORY}%"
+fi
+
+echo $OUTPUT
+exit $RETURN
