@@ -1,5 +1,5 @@
 #!/bin/bash
-# ######################## check_memory.pl ######################## #
+# ######################## check_url ######################## #
 # Date      : September 20, 2015                                    #
 # Purpose   : Script to check a given URL's response time.          #
 # Author    : Omar Abou-Youssef                                     #
@@ -40,17 +40,17 @@ TIME=$(curl -X GET "$URL" -write-out -w %{time_total} -o /dev/null -s)
 
 if (( $(echo "$TIME!=0.0" | bc -l) )); then
     RETURN=$STATE_OK
-    OUTPUT="CURL OK - Response time ${TIME}s"
+    OUTPUT="CURL OK - Response time ${TIME}s|response=$TIME"
 fi
 
 if (( $(echo "$TIME>$WARNING" | bc -l) )); then
     RETURN=$STATE_WARNING
-    OUTPUT="WARNING - Response time ${TIME}s"
+    OUTPUT="WARNING - Response time ${TIME}s|response=$TIME"
 fi
 
 if (( $(echo "$TIME>$CRITICAL" | bc -l) )); then
     RETURN=$STATE_CRITICAL
-    OUTPUT="PROBLEM - Response time ${TIME}s"
+    OUTPUT="PROBLEM - Response time ${TIME}s|response=$TIME"
 fi
 
 # OUTPUT AND RETURN

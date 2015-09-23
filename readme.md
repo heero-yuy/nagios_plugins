@@ -13,7 +13,7 @@ Queries a given URL using the `curl` command to measure the total response time 
 
 On Ubuntu/Linux, copy all the plugins to `/usr/lib/nagios/plugins/` and use `chmod 755` to make them executable if needed. 
 
-On OS X, depending on how you installed Nagios, you can copy them to the same path as Linux or if you're using **MacPorts**, copy plugins to `/opt/local/libexec/nagios/. Use `chmod 755` to make them executable if needed.
+On OS X, depending on how you installed Nagios, you can copy them to the same path as Linux or if you're using **MacPorts**, copy plugins to `/opt/local/libexec/nagios/`. Use `chmod 755` to make them executable if needed.
 
 In your Nagios `commands.cfg` file or any other `.cfg` you use for your commands, add the following commands for the plugins:
 
