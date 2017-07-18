@@ -11,7 +11,7 @@ Queries a given URL using the `curl` command to measure the total response time 
 
 ## check_nav
 
-Queries the SQL Server database for **Microsoft Business Dynamics Nav 2009** R2 to get the number of active users/sessions. Requires `tsql` to be installed.
+Queries the SQL Server database for **Microsoft Business Dynamics Nav 2009 R2** to get the number of active users/sessions. Requires `tsql` to be installed.
 
 ## Installation
 

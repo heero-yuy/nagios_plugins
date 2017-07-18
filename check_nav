@@ -1,12 +1,14 @@
 #!/bin/bash
-# ######################## check_memory ########################### #
-# Date      : September 20, 2015                                    #
-# Purpose   : Script to check the number of active session count    #
-#             in Microsoft Business Dynamics Nav 2009 R2.           #
-# Author    : Omar Abou-Youssef                                     #
-# Arguments : check_nav -w <Warning session count>                  #
+# ######################## check_nav ############################## #
+# Date         : September 20, 2015                                 #
+# Purpose      : Script to check the number of active session count #
+#                in Microsoft Business Dynamics Nav 2009 R2.        #
+# Author       : Omar Abou-Youssef                                  #
+# Arguments    : check_nav -w <Warning session count>               #
 #                       -c <Critical session count>                 #
-# Depends   : tsql                                                  #
+# Instructions : Specify SQL_USERNAME and SQL_PASSWORD of the       #
+#                SQL database for Nav.                              #
+# Depends      : tsql                                               #
 # ################################################################# #
 
 STATE_OK=0
