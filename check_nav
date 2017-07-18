@@ -1,0 +1,95 @@
+#!/bin/bash
+# ######################## check_memory ########################### #
+# Date      : September 20, 2015                                    #
+# Purpose   : Script to check the number of active session count    #
+#             in Microsoft Business Dynamics Nav 2009 R2.           #
+# Author    : Omar Abou-Youssef                                     #
+# Arguments : check_nav -w <Warning session count>                  #
+#                       -c <Critical session count>                 #
+# Depends   : tsql                                                  #
+# ################################################################# #
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+
+ERROR_FILE="/tmp/check_nav.err"
+
+RETURN=$STATE_UNKNOWN
+OUTPUT="Plugin error: Failed to parse SQL Statement or invalid session value."
+
+WARNING=37
+CRITICAL=38
+
+# Specify Username and Password 
+SQL_USERNAME=""
+SQL_PASSWORD=""
+
+while getopts ":w:c:" o; do
+    case "${o}" in
+        w)  
+            WARNING=${OPTARG}
+            CRITICAL=$((WARNING + 10))
+            ;;  
+        c)  
+            CRITICAL=${OPTARG}
+            ;;  
+    esac
+done
+
+SQL=""
+# Get the active session count from SQL
+getActiveSessionCount () {
+SQL=$(tsql -S nav -U $SQL_USERNAME -P $SQL_PASSWORD <<EOS 2> $ERROR_FILE
+USE Navision 
+GO 
+SELECT COUNT(*) FROM "dbo"."Session" where [Application Name] = 'Microsoft Dynamics NAV Classic client' 
+GO
+exit
+EOS)
+}
+
+getActiveSessionCount
+
+# Parse sessions
+SESSIONS=""
+if [[ "$SQL" =~ [^[:graph:]]([0-9]+)[^[:graph:]] ]]; then
+    SESSIONS=${BASH_REMATCH[1]}
+else
+    OUTPUT="Plugin error: Failed to parse SQL Statement."
+    
+    ERROR=$(cat $ERROR_FILE)
+    if [[ "$ERROR" =~ Error.*:(.+) ]]; then
+        ERROR_MSG=${BASH_REMATCH[1]}
+        OUTPUT="Plugin error: $ERROR_MSG."
+    fi
+
+    echo $OUTPUT
+    exit $RETURN
+fi
+
+if [[ "$SQL" =~ [^[:graph:]]([0-9]+)[^[:graph:]] ]]; then
+    SESSIONS=${BASH_REMATCH[1]}
+else
+    echo $OUTPUT
+    exit $RETURN
+fi
+
+if [ "$SESSIONS" -ge 0 ] ; then
+    RETURN=$STATE_OK
+    OUTPUT="SESSIONS OK: Number of open sessions is ${SESSIONS}|'Open sessions'=${SESSIONS};${WARNING};${CRITICAL};0;38"
+fi
+
+if [ "$SESSIONS" -ge "$WARNING" ] ; then
+    RETURN=$STATE_WARNING
+    OUTPUT="WARNING: Number of open sessions is ${SESSIONS}|'Open sessions'=${SESSIONS};${WARNING};${CRITICAL};0;38"
+fi
+
+if [  "$SESSIONS" -ge "$CRITICAL" ] ; then
+    RETURN=$STATE_CRITICAL
+    OUTPUT="CRITICAL: Number of open sessions is ${SESSIONS}|'Open sessions'=${SESSIONS};${WARNING};${CRITICAL};0;38"
+fi
+
+echo $OUTPUT
+exit $RETURN

@@ -36,17 +36,17 @@ MEMORY=$(landscape-sysinfo --sysinfo-plugins=Memory | sed -r 's/^\s+Memory usage
 
 if [ "$MEMORY" -ne 0 ] ; then
     RETURN=$STATE_OK
-    OUTPUT="MEM OK: Memory usage is ${MEMORY}%|response=$MEMORY"
+    OUTPUT="MEM OK: Memory usage is ${MEMORY}%|'Memory Usage'=${MEMORY}%;${WARNING};${CRITICAL};0;100"
 fi
 
 if [ "$MEMORY" -ge "$WARNING" ] ; then
     RETURN=$STATE_WARNING
-    OUTPUT="WARNING: Memory usage is ${MEMORY}%|response=$MEMORY"
+    OUTPUT="WARNING: Memory usage is ${MEMORY}%|'Memory Usage'=${MEMORY}%;${WARNING};${CRITICAL};0;100"
 fi
 
 if [  "$MEMORY" -ge "$CRITICAL" ] ; then
     RETURN=$STATE_CRITICAL
-    OUTPUT="PROBLEM: Memory usage is ${MEMORY}%|response=$MEMORY"
+    OUTPUT="PROBLEM: Memory usage is ${MEMORY}%|'Memory Usage'=${MEMORY}%;${WARNING};${CRITICAL};0;100"
 fi
 
 echo $OUTPUT

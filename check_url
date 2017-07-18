@@ -40,17 +40,17 @@ TIME=$(curl -X GET "$URL" -write-out -w %{time_total} -o /dev/null -s)
 
 if (( $(echo "$TIME!=0.0" | bc -l) )); then
     RETURN=$STATE_OK
-    OUTPUT="CURL OK - Response time ${TIME}s|response=$TIME"
+    OUTPUT="CURL OK - Response time ${TIME}s|'Total Response Time'=${TIME}s;${WARNING};${CRITICAL};0"
 fi
 
 if (( $(echo "$TIME>$WARNING" | bc -l) )); then
     RETURN=$STATE_WARNING
-    OUTPUT="WARNING - Response time ${TIME}s|response=$TIME"
+    OUTPUT="WARNING - Response time ${TIME}s|'Total Response Time'=${TIME}s;${WARNING};${CRITICAL};0"
 fi
 
 if (( $(echo "$TIME>$CRITICAL" | bc -l) )); then
     RETURN=$STATE_CRITICAL
-    OUTPUT="PROBLEM - Response time ${TIME}s|response=$TIME"
+    OUTPUT="PROBLEM - Response time ${TIME}s|'Total Response Time'=${TIME}s;${WARNING};${CRITICAL};0"
 fi
 
 # OUTPUT AND RETURN
